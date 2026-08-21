@@ -18,6 +18,17 @@ members = [
 version = "2.70.2"
 authors = ["Calling Team <callingteam@signal.org>"]
 
+# signal2sip only ever builds this workspace for its own native Linux
+# daemon (--features native), never Android/iOS/Electron, so tuning the
+# release profile globally here is safe: panic="abort" is fine because
+# the only catch_unwind() in the tree (src/rust/src/android/error.rs)
+# is gated out of the native build (`target_os = "android"`).
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
 [patch.crates-io]
 # Use our fork of curve25519-dalek for zkgroup compatibility.
 curve25519-dalek = { git = 'https://github.com/signalapp/curve25519-dalek', tag = 'signal-curve25519-4.1.3' }
